@@ -8,7 +8,7 @@ public class MedicalFieldApplication
 {
 	public static void main( String[] args )
 	{
-		SpringApplication.run(MedicalFieldApplication.class, args);
+		SpringApplication.run( MedicalFieldApplication.class, args );
 	}
 
 }

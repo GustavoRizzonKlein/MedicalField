@@ -1,28 +1,38 @@
 package com.gustavo.MedicalField.Entitys;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.math.BigDecimal;
+
+@Entity
+@Table( name = "medication" )
 public class Medication
 {
-    private int id;
+    @Id
+    private String id;
+
     private String name;
     private String unit;
-    private String maximumDose;
+    private BigDecimal  maximumDose;
 
-    public int getId()
+    public String getId()
     {
         return id;
     }
 
-    public void setId( int id )
+    public void setId( String id )
     {
         this.id = id;
     }
 
-    public String getMaximumDose()
+    public BigDecimal getMaximumDose()
     {
         return maximumDose;
     }
 
-    public void setMaximumDose( String maximumDose )
+    public void setMaximumDose( BigDecimal  maximumDose )
     {
         this.maximumDose = maximumDose;
     }

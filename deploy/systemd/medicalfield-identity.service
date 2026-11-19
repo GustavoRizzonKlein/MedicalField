@@ -1,0 +1,12 @@
+[Unit]
+Description=MedicalField identity service (Node.js)
+After=network.target mysql.service
+
+[Service]
+User=medicalfield
+WorkingDirectory=/opt/medicalfield/identity-service
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,170 @@
+{
+  "info": {
+    "name": "MedicalField",
+    "description": "Routes of the three MedicalField services. Run '1. Login' first: it stores the token used by every other request. Set the 'password' variable to SEED_PASSWORD from identity-service/.env.example.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "identity", "value": "http://localhost:8081" },
+    { "key": "clinical", "value": "http://localhost:8080" },
+    { "key": "documents", "value": "http://localhost:8082" },
+    { "key": "registryNumber", "value": "CRM-RS-12345" },
+    { "key": "password", "value": "" },
+    { "key": "token", "value": "" },
+    { "key": "personId", "value": "" },
+    { "key": "recordId", "value": "" },
+    { "key": "encounterId", "value": "" },
+    { "key": "medicationId", "value": "6a1f6d0e-1b1a-4c55-9c1e-000000000003" },
+    { "key": "pushBody", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "identity-service",
+      "item": [
+        {
+          "name": "1. Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "pm.test('status 200', () => pm.response.to.have.status(200));",
+            "pm.collectionVariables.set('token', pm.response.json().token);"
+          ] } }],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"registryNumber\": \"{{registryNumber}}\",\n  \"password\": \"{{password}}\"\n}" },
+            "url": "{{identity}}/auth/login"
+          }
+        },
+        { "name": "Me", "request": { "method": "GET", "url": "{{identity}}/auth/me" } },
+        { "name": "Professionals", "request": { "method": "GET", "url": "{{identity}}/professionals" } },
+        {
+          "name": "Send offline logs (POST /logs)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"entries\": [\n    { \"id\": \"{{$guid}}\", \"occurredAt\": \"{{$isoTimestamp}}\", \"level\": \"INFO\", \"action\": \"ENCOUNTER_SAVED_OFFLINE\", \"deviceId\": \"postman\", \"details\": \"sent from Postman\" }\n  ]\n}" },
+            "url": "{{identity}}/logs"
+          }
+        },
+        { "name": "Client logs (admin)", "request": { "method": "GET", "url": "{{identity}}/logs/client?limit=20" } },
+        { "name": "Access logs (admin)", "request": { "method": "GET", "url": "{{identity}}/logs/access?limit=20" } },
+        {
+          "name": "Without token -> 401",
+          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": "{{identity}}/professionals" }
+        }
+      ]
+    },
+    {
+      "name": "clinical-service",
+      "item": [
+        { "name": "Medications", "request": { "method": "GET", "url": "{{clinical}}/medications" } },
+        { "name": "Medication by id", "request": { "method": "GET", "url": "{{clinical}}/medications/{{medicationId}}" } },
+        { "name": "Persons", "request": { "method": "GET", "url": "{{clinical}}/persons" } },
+        { "name": "Medical records (prontuarios)", "request": { "method": "GET", "url": "{{clinical}}/medical-records" } },
+        { "name": "Encounters (atendimentos)", "request": { "method": "GET", "url": "{{clinical}}/encounters" } },
+        {
+          "name": "2. Create person (POST /persons)",
+          "event": [
+            { "listen": "prerequest", "script": { "exec": ["pm.collectionVariables.set('personId', pm.variables.replaceIn('{{$guid}}'));"] } },
+            { "listen": "test", "script": { "exec": ["pm.test('created', () => pm.expect(pm.response.json().outcome).to.eql('CREATED'));"] } }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{personId}}\",\n  \"fullName\": \"Postman Patient\",\n  \"birthDate\": \"1990-01-15\",\n  \"sex\": \"Feminino\",\n  \"email\": \"family@example.com\",\n  \"updatedAt\": \"{{$isoTimestamp}}\"\n}" },
+            "url": "{{clinical}}/persons"
+          }
+        },
+        {
+          "name": "3. Create medical record (POST /medical-records)",
+          "event": [{ "listen": "prerequest", "script": { "exec": ["pm.collectionVariables.set('recordId', pm.variables.replaceIn('{{$guid}}'));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{recordId}}\",\n  \"personId\": \"{{personId}}\",\n  \"bloodType\": \"O+\",\n  \"allergies\": \"Penicillin\"\n}" },
+            "url": "{{clinical}}/medical-records"
+          }
+        },
+        {
+          "name": "4. Create encounter (POST /encounters)",
+          "event": [{ "listen": "prerequest", "script": { "exec": ["pm.collectionVariables.set('encounterId', pm.variables.replaceIn('{{$guid}}'));"] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{encounterId}}\",\n  \"medicalRecordId\": \"{{recordId}}\",\n  \"occurredAt\": \"{{$isoTimestamp}}\",\n  \"location\": \"BR-386 km 350\",\n  \"chiefComplaint\": \"Chest pain\",\n  \"heartRate\": 110,\n  \"oxygenSaturation\": 94,\n  \"glasgowEye\": 4,\n  \"glasgowVerbal\": 5,\n  \"glasgowMotor\": 6,\n  \"manchesterPriority\": \"ORANGE\",\n  \"medications\": [ { \"medicationId\": \"{{medicationId}}\", \"dose\": 200, \"route\": \"VO\" } ]\n}" },
+            "url": "{{clinical}}/encounters"
+          }
+        },
+        {
+          "name": "Encounter above maximum dose -> 422",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{$guid}}\",\n  \"medicalRecordId\": \"{{recordId}}\",\n  \"occurredAt\": \"{{$isoTimestamp}}\",\n  \"chiefComplaint\": \"Overdose test\",\n  \"glasgowEye\": 4,\n  \"glasgowVerbal\": 5,\n  \"glasgowMotor\": 6,\n  \"manchesterPriority\": \"GREEN\",\n  \"medications\": [ { \"medicationId\": \"{{medicationId}}\", \"dose\": 900 } ]\n}" },
+            "url": "{{clinical}}/encounters"
+          }
+        },
+        { "name": "Medical record of the person", "request": { "method": "GET", "url": "{{clinical}}/persons/{{personId}}/medical-record" } },
+        { "name": "Encounters of the person", "request": { "method": "GET", "url": "{{clinical}}/persons/{{personId}}/encounters" } },
+        {
+          "name": "Conflict: older version -> KEPT_SERVER_VERSION",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"id\": \"{{personId}}\",\n  \"fullName\": \"Old name\",\n  \"updatedAt\": \"2000-01-01T00:00:00Z\"\n}" },
+            "url": "{{clinical}}/persons"
+          }
+        },
+        { "name": "Sync pull", "request": { "method": "GET", "url": "{{clinical}}/sync/pull" } },
+        {
+          "name": "Sync push (new batch)",
+          "event": [{ "listen": "prerequest", "script": { "exec": [
+            "const id = () => pm.variables.replaceIn('{{$guid}}');",
+            "const person = id(); const record = id(); const now = new Date().toISOString();",
+            "pm.collectionVariables.set('pushBody', JSON.stringify({ deviceId: 'postman', operations: [",
+            "  { operationId: id(), type: 'PERSON_UPSERT', person: { id: person, fullName: 'Push Patient', createdAt: now, updatedAt: now } },",
+            "  { operationId: id(), type: 'MEDICAL_RECORD_UPSERT', medicalRecord: { id: record, personId: person, createdAt: now, updatedAt: now } },",
+            "  { operationId: id(), type: 'ENCOUNTER_CREATE', encounter: { id: id(), medicalRecordId: record, occurredAt: now, chiefComplaint: 'Fall', glasgowEye: 4, glasgowVerbal: 5, glasgowMotor: 6, manchesterPriority: 'GREEN', medications: [] } }",
+            "] }));"
+          ] } }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{{pushBody}}" },
+            "url": "{{clinical}}/sync/push"
+          }
+        },
+        {
+          "name": "Sync push (same batch again -> DUPLICATE)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{{pushBody}}" },
+            "url": "{{clinical}}/sync/push"
+          }
+        },
+        { "name": "Access logs (admin)", "request": { "method": "GET", "url": "{{clinical}}/access-logs?limit=20" } }
+      ]
+    },
+    {
+      "name": "document-service",
+      "item": [
+        { "name": "Care report PDF", "request": { "method": "GET", "url": "{{documents}}/care-reports/{{encounterId}}/pdf" } },
+        {
+          "name": "Send care report by e-mail",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"to\": \"family@example.com\"\n}" },
+            "url": "{{documents}}/care-reports/{{encounterId}}/email"
+          }
+        },
+        { "name": "E-mails sent", "request": { "method": "GET", "url": "{{documents}}/care-reports/emails?limit=20" } }
+      ]
+    }
+  ]
+}

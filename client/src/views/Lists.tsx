@@ -22,7 +22,7 @@ function SyncBadge({ status }: { status: 'SYNCED' | 'PENDING' }) {
 function Panel({ title, count, children }: { title: string; count?: number; children: ReactNode }) {
   return (
     <section className="panel">
-      <h2>
+      <h2 style={{ marginBottom: '0.6rem' }}>
         {title}
         {count !== undefined && <span className="count">{count}</span>}
       </h2>
@@ -32,7 +32,7 @@ function Panel({ title, count, children }: { title: string; count?: number; chil
 }
 
 function Table({ headers, rows }: { headers: string[]; rows: ReactNode[][] }) {
-  if (rows.length === 0) return <p className="muted">Nenhum registro.</p>;
+  if (rows.length === 0) return <p className="empty">Nenhum registro.</p>;
   return (
     <div className="table-wrap">
       <table>
@@ -88,7 +88,8 @@ export function EncountersList({ version }: { version: number }) {
           dateTime(row.occurredAt),
           row.personName ?? '-',
           row.chiefComplaint,
-          <span className="badge" style={{ background: MANCHESTER[row.manchesterPriority]?.color }}>
+          <span className="badge">
+            <span className="dot" style={{ background: MANCHESTER[row.manchesterPriority]?.color }} />
             {MANCHESTER[row.manchesterPriority]?.label ?? row.manchesterPriority}
           </span>,
           row.glasgowTotal,

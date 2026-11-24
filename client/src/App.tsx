@@ -1,19 +1,20 @@
-import { useEffect, useState } from 'react';
+import { IconAmbulance, IconFileText, IconPill, IconStack2, IconUsers } from '@tabler/icons-react';
+import { type ComponentType, useEffect, useState } from 'react';
 import type { AppState } from '../shared/contract';
 import { StatusBar } from './components/StatusBar';
 import { Login } from './views/Login';
 import { EncountersList, MedicationsList, OutboxList, PatientsList } from './views/Lists';
 import { NewOccurrence } from './views/NewOccurrence';
 
-const TABS = {
-  occurrence: 'Nova ocorrência',
-  patients: 'Pacientes',
-  encounters: 'Atendimentos',
-  outbox: 'Pendências',
-  medications: 'Medicamentos',
-} as const;
+const TABS: Record<string, { label: string; icon: ComponentType<{ size?: number }> }> = {
+  occurrence: { label: 'Nova ocorrência', icon: IconAmbulance },
+  patients: { label: 'Pacientes', icon: IconUsers },
+  encounters: { label: 'Atendimentos', icon: IconFileText },
+  outbox: { label: 'Pendências', icon: IconStack2 },
+  medications: { label: 'Medicamentos', icon: IconPill },
+};
 
-type TabKey = keyof typeof TABS;
+type TabKey = 'occurrence' | 'patients' | 'encounters' | 'outbox' | 'medications';
 
 export function App() {
   const [state, setState] = useState<AppState | null>(null);
@@ -35,15 +36,19 @@ export function App() {
   return (
     <div className="app">
       <StatusBar state={state} />
-      <nav className="tabs">
-        {(Object.keys(TABS) as TabKey[]).map((key) => (
-          <button key={key} type="button" className={key === tab ? 'tab active' : 'tab'} onClick={() => setTab(key)}>
-            {TABS[key]}
-            {key === 'outbox' && state.pendingCount + state.failedCount > 0 && (
-              <span className="pill">{state.pendingCount + state.failedCount}</span>
-            )}
-          </button>
-        ))}
+      <nav className="glass tabs">
+        {(Object.keys(TABS) as TabKey[]).map((key) => {
+          const Icon = TABS[key]!.icon;
+          return (
+            <button key={key} type="button" className={key === tab ? 'tab active' : 'tab'} onClick={() => setTab(key)}>
+              <Icon size={17} />
+              {TABS[key]!.label}
+              {key === 'outbox' && state.pendingCount + state.failedCount > 0 && (
+                <span className="pill">{state.pendingCount + state.failedCount}</span>
+              )}
+            </button>
+          );
+        })}
       </nav>
       <main className="content">
         {tab === 'occurrence' && <NewOccurrence version={version} online={state.online} />}

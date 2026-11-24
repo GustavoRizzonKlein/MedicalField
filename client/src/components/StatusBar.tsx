@@ -1,3 +1,4 @@
+import { IconCloudDownload, IconCloudUpload, IconHeartbeat, IconLogout, IconStack2 } from '@tabler/icons-react';
 import { useState } from 'react';
 import type { AppState } from '../../shared/contract';
 
@@ -19,15 +20,20 @@ export function StatusBar({ state }: { state: AppState }) {
   }
 
   return (
-    <header className="statusbar">
+    <header className="glass statusbar">
       <div className="brand">
-        <strong>MedicalField</strong>
-        <span className="muted">
-          {professional.fullName} · {professional.registryNumber}
-        </span>
+        <div className="logo">
+          <IconHeartbeat size={21} />
+        </div>
+        <div className="brand-text">
+          <strong>MedicalField</strong>
+          <span className="muted">
+            {professional.fullName} · {professional.registryNumber}
+          </span>
+        </div>
       </div>
 
-      {/* Simulador de conectividade exigido pelo roteiro de testes */}
+      {/* Connectivity simulator required by the test script */}
       <label className={`switch ${state.online ? 'on' : 'off'}`}>
         <input
           type="checkbox"
@@ -35,28 +41,32 @@ export function StatusBar({ state }: { state: AppState }) {
           onChange={(event) => void window.medicalField.setOnline(event.target.checked)}
         />
         <span className="slider" />
-        <span className="switch-label">Simular conectividade: {state.online ? 'ONLINE' : 'OFFLINE'}</span>
+        Simular conectividade: {state.online ? 'ONLINE' : 'OFFLINE'}
       </label>
 
       <div className="sync">
-        <span title="Operações aguardando envio">
-          Pendentes: <b>{state.pendingCount}</b>
+        <span className="glass pending-counter" title="Operações aguardando envio">
+          <IconStack2 size={16} /> Pendentes: <b>{state.pendingCount}</b>
           {state.failedCount > 0 && <b className="error"> · {state.failedCount} com erro</b>}
         </span>
         <button type="button" className="secondary" onClick={() => run('pull')} disabled={busy !== null || !state.online}>
+          <IconCloudDownload size={17} />
           {busy === 'pull' ? 'Recebendo...' : 'Receber dados do Portal'}
         </button>
         <button type="button" onClick={() => run('push')} disabled={busy !== null || !state.online || state.syncing}>
+          <IconCloudUpload size={17} />
           {busy === 'push' || state.syncing ? 'Enviando...' : 'Enviar pendentes'}
         </button>
-        <button type="button" className="secondary" onClick={() => void window.medicalField.logout()}>
-          Sair
+        <button type="button" className="secondary" onClick={() => void window.medicalField.logout()} aria-label="Sair">
+          <IconLogout size={17} />
         </button>
       </div>
 
       <div className="status-line muted">
-        Último recebimento: {time(state.lastPullAt)} · Último envio: {time(state.lastPushAt)} · Dispositivo: {state.deviceId}
-        {state.lastMessage && <span className="message"> · {state.lastMessage}</span>}
+        <span>Último recebimento: {time(state.lastPullAt)}</span>
+        <span>Último envio: {time(state.lastPushAt)}</span>
+        <span>Dispositivo: {state.deviceId}</span>
+        {state.lastMessage && <span className="message">{state.lastMessage}</span>}
       </div>
     </header>
   );

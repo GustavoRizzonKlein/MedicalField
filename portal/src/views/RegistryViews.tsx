@@ -1,22 +1,28 @@
 import { useCallback } from 'react';
 import { getJson } from '../api';
+import type { ViewProps } from '../App';
 import { Section, Table } from '../components/Table';
 import { date, dateTime, text } from '../format';
 import type { MedicalRecord, Medication, Person, Professional } from '../types';
 import { useData } from '../useData';
 
-export function MedicalRecordsView() {
+function matches(value: string | null | undefined, search: string) {
+  return !search || (value ?? '').toLowerCase().includes(search);
+}
+
+export function MedicalRecordsView({ search }: ViewProps) {
   const load = useCallback(() => getJson<MedicalRecord[]>('clinical', '/medical-records'), []);
   const { data, error, loading, reload } = useData(load);
+  const rows = data?.filter((row) => matches(row.personName, search)) ?? null;
   return (
-    <Section title="Prontuários" count={data?.length} loading={loading} error={error} onReload={reload}>
+    <Section title="Prontuários" count={rows?.length} loading={loading} error={error} onReload={reload}>
       <Table
-        rows={data}
+        rows={rows}
         rowKey={(row) => row.id}
         columns={[
           { header: 'Paciente', render: (row) => text(row.personName) },
           { header: 'Tipo sanguíneo', render: (row) => text(row.bloodType) },
-          { header: 'Alergias', render: (row) => text(row.allergies) },
+          { header: 'Alergias', render: (row) => (row.allergies ? <span className="error">{row.allergies}</span> : '-') },
           { header: 'Condições crônicas', render: (row) => text(row.chronicConditions) },
           { header: 'Medicamentos contínuos', render: (row) => text(row.continuousMedications) },
           { header: 'Atualizado em', render: (row) => dateTime(row.updatedAt) },
@@ -27,13 +33,14 @@ export function MedicalRecordsView() {
   );
 }
 
-export function PersonsView() {
+export function PersonsView({ search }: ViewProps) {
   const load = useCallback(() => getJson<Person[]>('clinical', '/persons'), []);
   const { data, error, loading, reload } = useData(load);
+  const rows = data?.filter((row) => matches(row.fullName, search)) ?? null;
   return (
-    <Section title="Pessoas" count={data?.length} loading={loading} error={error} onReload={reload}>
+    <Section title="Pessoas" count={rows?.length} loading={loading} error={error} onReload={reload}>
       <Table
-        rows={data}
+        rows={rows}
         rowKey={(row) => row.id}
         columns={[
           { header: 'Nome', render: (row) => row.fullName },
@@ -49,14 +56,17 @@ export function PersonsView() {
   );
 }
 
-export function MedicationsView() {
+export function MedicationsView({ search }: ViewProps) {
   const load = useCallback(() => getJson<Medication[]>('clinical', '/medications'), []);
   const { data, error, loading, reload } = useData(load);
+  const rows = data?.filter((row) => matches(row.name, search)) ?? null;
   return (
-    <Section title="Medicamentos" count={data?.length} loading={loading} error={error} onReload={reload}>
-      <p className="muted">Novos medicamentos são inseridos diretamente no banco (tabela medication).</p>
+    <Section title="Medicamentos" count={rows?.length} loading={loading} error={error} onReload={reload}>
+      <p className="muted" style={{ marginTop: 0 }}>
+        Novos medicamentos são inseridos diretamente no banco (tabela medication).
+      </p>
       <Table
-        rows={data}
+        rows={rows}
         rowKey={(row) => row.id}
         columns={[
           { header: 'Nome', render: (row) => row.name },
@@ -70,13 +80,14 @@ export function MedicationsView() {
 
 const REGISTRY_TYPES: Record<string, string> = { CRM: 'CRM', COREN: 'COREN', RESPONDER: 'Socorrista' };
 
-export function ProfessionalsView() {
+export function ProfessionalsView({ search }: ViewProps) {
   const load = useCallback(() => getJson<Professional[]>('identity', '/professionals'), []);
   const { data, error, loading, reload } = useData(load);
+  const rows = data?.filter((row) => matches(row.fullName, search)) ?? null;
   return (
-    <Section title="Profissionais" count={data?.length} loading={loading} error={error} onReload={reload}>
+    <Section title="Profissionais" count={rows?.length} loading={loading} error={error} onReload={reload}>
       <Table
-        rows={data}
+        rows={rows}
         rowKey={(row) => row.id}
         columns={[
           { header: 'Nome', render: (row) => row.fullName },

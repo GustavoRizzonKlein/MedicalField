@@ -16,7 +16,7 @@ interface TableProps<T> {
 
 export function Table<T>({ columns, rows, rowKey, onRowClick, selectedKey, empty = 'Nenhum registro.' }: TableProps<T>) {
   if (!rows) return null;
-  if (rows.length === 0) return <p className="muted">{empty}</p>;
+  if (rows.length === 0) return <p className="empty">{empty}</p>;
   return (
     <div className="table-wrap">
       <table>
@@ -79,7 +79,8 @@ export function PriorityBadge({ priority, labels }: { priority: string | null; l
   if (!priority) return <>-</>;
   const info = labels[priority];
   return (
-    <span className="badge" style={{ background: info?.color ?? '#666' }}>
+    <span className="badge">
+      <span className="dot" style={{ background: info?.color ?? '#888' }} />
       {info?.label ?? priority}
     </span>
   );

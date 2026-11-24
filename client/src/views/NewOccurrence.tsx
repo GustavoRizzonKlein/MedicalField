@@ -1,3 +1,13 @@
+import {
+  IconAlertTriangle,
+  IconClipboardHeart,
+  IconFileText,
+  IconPlus,
+  IconTrash,
+  IconUser,
+  IconWifi,
+  IconWifiOff,
+} from '@tabler/icons-react';
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react';
 import type { MedicationItem, OccurrenceInput, PatientItem } from '../../shared/contract';
 import { GLASGOW_EYE, GLASGOW_MOTOR, GLASGOW_VERBAL, MANCHESTER, ROUTES, START } from '../clinical';
@@ -146,13 +156,16 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
   return (
     <form className="occurrence" onSubmit={submit}>
       <div className={`mode-banner ${online ? 'online' : 'offline'}`}>
+        {online ? <IconWifi size={19} /> : <IconWifiOff size={19} />}
         {online
           ? 'Online: a ocorrência é gravada no dispositivo e enviada ao Portal em seguida.'
           : 'Offline: a ocorrência é gravada no dispositivo e enviada quando a conexão voltar.'}
       </div>
 
       <section className="panel">
-        <h2>Paciente</h2>
+        <h2>
+          <IconUser size={19} /> Paciente
+        </h2>
         <div className="radio-row">
           <label className="inline">
             <input type="radio" checked={mode === 'new'} onChange={() => setMode('new')} /> Novo paciente
@@ -190,14 +203,20 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
                 </option>
               ))}
             </select>
-            {existing?.allergies && <p className="alert">Alergias: {existing.allergies}</p>}
+            {existing?.allergies && (
+              <p className="alert">
+                <IconAlertTriangle size={17} /> Alergias: {existing.allergies}
+              </p>
+            )}
           </>
         )}
       </section>
 
       {needsRecord && (
         <section className="panel">
-          <h2>Prontuário</h2>
+          <h2>
+            <IconFileText size={19} /> Prontuário
+          </h2>
           <div className="grid">
             {field(
               'Tipo sanguíneo',
@@ -216,7 +235,9 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
       )}
 
       <section className="panel">
-        <h2>Atendimento</h2>
+        <h2>
+          <IconClipboardHeart size={19} /> Atendimento
+        </h2>
         <div className="grid">
           {field('Data/hora', encounterInput('occurredAt', 'datetime-local', true))}
           {field('Local', encounterInput('location'), true)}
@@ -235,7 +256,7 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
         </div>
 
         <h3>
-          Escala de Glasgow: <span className={glasgowTotal <= 8 ? 'error' : undefined}>{glasgowTotal}</span>
+          Escala de Glasgow: <span className={glasgowTotal <= 8 ? 'glasgow-total error' : 'glasgow-total'}>{glasgowTotal}</span>
           {glasgowTotal <= 8 && <span className="error"> (grave)</span>}
         </h3>
         <div className="grid">
@@ -315,15 +336,20 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
                   <option key={route}>{route}</option>
                 ))}
               </select>
-              <button type="button" className="secondary" onClick={() => setRows(rows.filter((item) => item.key !== row.key))}>
-                Remover
+              <button
+                type="button"
+                className="secondary"
+                aria-label="Remover medicamento"
+                onClick={() => setRows(rows.filter((item) => item.key !== row.key))}
+              >
+                <IconTrash size={16} />
               </button>
             </div>
           );
         })}
         {doseErrors.map((error) => (
           <p key={error} className="alert">
-            Dose bloqueada: {error}
+            <IconAlertTriangle size={17} /> Dose bloqueada: {error}
           </p>
         ))}
         <button
@@ -332,7 +358,7 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
           disabled={medications.length === 0}
           onClick={() => setRows([...rows, { key: Date.now(), medicationId: '', dose: '', route: '' }])}
         >
-          + Adicionar medicamento
+          <IconPlus size={16} /> Adicionar medicamento
         </button>
 
         <h3>Desfecho</h3>
@@ -343,7 +369,7 @@ export function NewOccurrence({ version, online }: { version: number; online: bo
         </div>
       </section>
 
-      {result && <p className={result.ok ? 'success' : 'alert'}>{result.message}</p>}
+      {result && <p className={result.ok ? 'notice' : 'alert'}>{result.message}</p>}
       <button type="submit" className="primary-large" disabled={busy || doseErrors.length > 0}>
         {busy ? 'Salvando...' : 'Registrar ocorrência'}
       </button>

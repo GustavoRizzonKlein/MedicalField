@@ -1,9 +1,9 @@
 export const MANCHESTER: Record<string, { label: string; color: string }> = {
-  RED: { label: 'Vermelho - emergência', color: '#d32f2f' },
-  ORANGE: { label: 'Laranja - muito urgente', color: '#ef6c00' },
-  YELLOW: { label: 'Amarelo - urgente', color: '#f9a825' },
-  GREEN: { label: 'Verde - pouco urgente', color: '#2e7d32' },
-  BLUE: { label: 'Azul - não urgente', color: '#1565c0' },
+  RED: { label: 'Vermelho - emergência', color: '#e5484d' },
+  ORANGE: { label: 'Laranja - muito urgente', color: '#f97316' },
+  YELLOW: { label: 'Amarelo - urgente', color: '#f5a524' },
+  GREEN: { label: 'Verde - pouco urgente', color: '#22c55e' },
+  BLUE: { label: 'Azul - não urgente', color: '#3b82f6' },
 };
 
 export const START: Record<string, string> = {

@@ -1,3 +1,4 @@
+import { IconHeartbeat } from '@tabler/icons-react';
 import { type FormEvent, useState } from 'react';
 import { postJson, setToken } from '../api';
 import type { Professional } from '../types';
@@ -30,9 +31,14 @@ export function Login({ onLogin }: { onLogin: (professional: Professional) => vo
 
   return (
     <main className="login">
-      <form className="panel login-form" onSubmit={submit}>
-        <h1>MedicalField</h1>
-        <p className="muted">Portal administrativo</p>
+      <form className="glass login-form" onSubmit={submit}>
+        <div className="logo">
+          <IconHeartbeat size={24} />
+        </div>
+        <div>
+          <h1>MedicalField</h1>
+          <p className="muted">Portal administrativo</p>
+        </div>
         <label>
           Registro profissional (CRM, COREN ou ID de socorrista)
           <input value={registryNumber} onChange={(event) => setRegistryNumber(event.target.value)} autoFocus required />

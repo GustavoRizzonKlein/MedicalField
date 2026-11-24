@@ -1,3 +1,4 @@
+import { IconHeartbeat } from '@tabler/icons-react';
 import { type FormEvent, useEffect, useState } from 'react';
 import type { ClientConfig } from '../../shared/contract';
 
@@ -25,9 +26,14 @@ export function Login() {
 
   return (
     <main className="login">
-      <form className="panel login-form" onSubmit={submit}>
-        <h1>MedicalField</h1>
-        <p className="muted">Ficha de atendimento pré-hospitalar</p>
+      <form className="glass login-form" onSubmit={submit}>
+        <div className="logo">
+          <IconHeartbeat size={24} />
+        </div>
+        <div>
+          <h1>MedicalField</h1>
+          <p className="muted">Ficha de atendimento pré-hospitalar</p>
+        </div>
         <label>
           Registro profissional (CRM, COREN ou ID de socorrista)
           <input value={registryNumber} onChange={(event) => setRegistryNumber(event.target.value)} autoFocus required />

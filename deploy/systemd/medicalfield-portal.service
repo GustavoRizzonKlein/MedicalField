@@ -3,7 +3,7 @@ Description=MedicalField administrative portal (vite preview with API proxy)
 After=network.target
 
 [Service]
-User=medicalfield
+User=univates
 WorkingDirectory=/opt/medicalfield/portal
 ExecStart=/usr/bin/npm run preview
 Restart=on-failure

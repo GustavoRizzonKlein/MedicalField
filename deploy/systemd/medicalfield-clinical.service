@@ -3,11 +3,11 @@ Description=MedicalField clinical service (Java)
 After=network.target mysql.service medicalfield-identity.service
 
 [Service]
-User=medicalfield
+User=univates
 WorkingDirectory=/opt/medicalfield/clinical-service
-Environment=DB_PASSWORD=change-me
-Environment=JWT_PUBLIC_KEY_PATH=/opt/medicalfield/keys/jwt-public.pem
-ExecStart=/usr/bin/java -jar build/libs/MedicalField-0.0.1-SNAPSHOT.jar
+# DB_PASSWORD and JWT_PUBLIC_KEY_PATH, readable only by the service user
+EnvironmentFile=/opt/medicalfield/clinical-service/.env
+ExecStart=/usr/bin/java -Xmx384m -jar build/libs/MedicalField-0.0.1-SNAPSHOT.jar
 Restart=on-failure
 
 [Install]

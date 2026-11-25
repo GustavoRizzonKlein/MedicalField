@@ -3,7 +3,7 @@ Description=MedicalField document service (Python)
 After=network.target mysql.service medicalfield-identity.service
 
 [Service]
-User=medicalfield
+User=univates
 WorkingDirectory=/opt/medicalfield/document-service
 ExecStart=/opt/medicalfield/document-service/.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 8082
 Restart=on-failure

@@ -11,6 +11,7 @@ export interface Medication {
   name: string;
   unit: string;
   maximumDose: number;
+  active: boolean;
 }
 
 export interface Person {

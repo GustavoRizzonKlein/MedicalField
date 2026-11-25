@@ -20,6 +20,12 @@ public class ApiExceptionHandler
         return error( HttpStatus.NOT_FOUND, exception.getMessage() );
     }
 
+    @ExceptionHandler( ForbiddenException.class )
+    public ResponseEntity<Map<String, String>> handleForbidden( ForbiddenException exception )
+    {
+        return error( HttpStatus.FORBIDDEN, exception.getMessage() );
+    }
+
     @ExceptionHandler( BusinessRuleException.class )
     public ResponseEntity<Map<String, String>> handleBusinessRule( BusinessRuleException exception )
     {

@@ -583,3 +583,70 @@ tr.selected {
   padding: 2rem 1rem;
   color: var(--muted);
 }
+
+/* --- CRUD forms --- */
+
+.crud-form {
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 0.8rem;
+}
+
+.crud-form h3 {
+  margin: 0;
+}
+
+.crud-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: end;
+}
+
+@media (max-width: 800px) {
+  .crud-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+label.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding-bottom: 0.6rem;
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+label.checkbox input {
+  width: auto;
+}
+
+.crud-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.icon-btn {
+  padding: 0.4rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  color: var(--text);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--glass-strong);
+  filter: none;
+}
+
+.icon-btn.danger:hover:not(:disabled) {
+  background: rgba(229, 72, 77, 0.25);
+  border-color: rgba(229, 72, 77, 0.5);
+}

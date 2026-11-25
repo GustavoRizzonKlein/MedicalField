@@ -145,7 +145,8 @@ export class LocalRepository {
   replaceMedications(medications: MedicationItem[]): void {
     this.db.exec('DELETE FROM medication');
     const insert = this.db.prepare('INSERT INTO medication (id, name, unit, maximum_dose) VALUES (?, ?, ?, ?)');
-    for (const medication of medications) {
+    // Inactive medications (deleted in the Portal) are not offered for new encounters.
+    for (const medication of medications.filter((item) => item.active !== false)) {
       insert.run(medication.id, medication.name, medication.unit, Number(medication.maximumDose));
     }
   }

@@ -16,6 +16,7 @@ public class Medication
     private String name;
     private String unit;
     private BigDecimal maximumDose;
+    private boolean active = true;
 
     public String getId()
     {
@@ -55,5 +56,15 @@ public class Medication
     public void setUnit( String unit )
     {
         this.unit = unit;
+    }
+
+    public boolean isActive()
+    {
+        return active;
+    }
+
+    public void setActive( boolean active )
+    {
+        this.active = active;
     }
 }

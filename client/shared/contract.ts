@@ -34,6 +34,8 @@ export interface MedicationItem {
   name: string;
   unit: string;
   maximumDose: number;
+  /** Sent by the server; false when the medication was deleted in the Portal. */
+  active?: boolean;
 }
 
 export interface PatientItem {

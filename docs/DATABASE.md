@@ -77,6 +77,7 @@ erDiagram
         VARCHAR name
         VARCHAR unit
         DECIMAL maximum_dose
+        BOOLEAN active
     }
 ```
 
@@ -91,12 +92,11 @@ Support tables:
 `professional_id`/`created_by` reference professionals of the identity service; there is no foreign key
 across services on purpose. `professional_name` is copied from the token so the encounter stays readable.
 
-### Inserting medications manually (test script step 9)
+### Medication registry (CRUD)
 
-```sql
-INSERT INTO medicalfield_clinical.medication (id, name, unit, maximum_dose)
-VALUES (UUID(), 'Morphine (Morfina)', 'mg', 10.00);
-```
+Medications are created, edited and deleted in the Portal (**Remédios**). A medication already used in an
+encounter is not removed: `active` becomes false (soft delete), so old encounters and care reports keep its
+name, and the client stops offering it in new encounters after the next pull.
 
 ## medicalfield_identity (identity-service)
 

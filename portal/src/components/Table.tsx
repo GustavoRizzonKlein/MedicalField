@@ -54,10 +54,12 @@ interface SectionProps {
   loading: boolean;
   error: string | null;
   onReload: () => void;
+  /** Extra buttons shown before "Atualizar". */
+  actions?: ReactNode;
   children: ReactNode;
 }
 
-export function Section({ title, count, loading, error, onReload, children }: SectionProps) {
+export function Section({ title, count, loading, error, onReload, actions, children }: SectionProps) {
   return (
     <section className="panel">
       <header className="panel-header">
@@ -65,9 +67,12 @@ export function Section({ title, count, loading, error, onReload, children }: Se
           {title}
           {count !== undefined && <span className="count">{count}</span>}
         </h2>
-        <button type="button" className="secondary" onClick={onReload} disabled={loading}>
-          {loading ? 'Carregando...' : 'Atualizar'}
-        </button>
+        <div className="header-right">
+          {actions}
+          <button type="button" className="secondary" onClick={onReload} disabled={loading}>
+            {loading ? 'Carregando...' : 'Atualizar'}
+          </button>
+        </div>
       </header>
       {error && <p className="error">{error}</p>}
       {children}

@@ -3,7 +3,7 @@ import { getJson } from '../api';
 import type { ViewProps } from '../App';
 import { Section, Table } from '../components/Table';
 import { date, dateTime, text } from '../format';
-import type { MedicalRecord, Medication, Person, Professional } from '../types';
+import type { MedicalRecord, Person, Professional } from '../types';
 import { useData } from '../useData';
 
 function matches(value: string | null | undefined, search: string) {
@@ -50,28 +50,6 @@ export function PersonsView({ search }: ViewProps) {
           { header: 'Telefone', render: (row) => text(row.phone) },
           { header: 'E-mail', render: (row) => text(row.email) },
           { header: 'Sincronizado em', render: (row) => dateTime(row.syncedAt) },
-        ]}
-      />
-    </Section>
-  );
-}
-
-export function MedicationsView({ search }: ViewProps) {
-  const load = useCallback(() => getJson<Medication[]>('clinical', '/medications'), []);
-  const { data, error, loading, reload } = useData(load);
-  const rows = data?.filter((row) => matches(row.name, search)) ?? null;
-  return (
-    <Section title="Medicamentos" count={rows?.length} loading={loading} error={error} onReload={reload}>
-      <p className="muted" style={{ marginTop: 0 }}>
-        Novos medicamentos são inseridos diretamente no banco (tabela medication).
-      </p>
-      <Table
-        rows={rows}
-        rowKey={(row) => row.id}
-        columns={[
-          { header: 'Nome', render: (row) => row.name },
-          { header: 'Unidade', render: (row) => row.unit },
-          { header: 'Dose máxima', render: (row) => `${row.maximumDose} ${row.unit}` },
         ]}
       />
     </Section>

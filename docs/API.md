@@ -40,6 +40,9 @@ Token claims: `sub` (professional id), `name`, `registryType` (`CRM`, `COREN`, `
 |---|---|---|
 | GET | `/medications` | All medications |
 | GET | `/medications/{id}` | One medication (404 if missing) |
+| POST | `/medications` | **Admin.** Create `{ name, unit, maximumDose, active? }` → 201. Duplicate name or dose ≤ 0 → 422 |
+| PUT | `/medications/{id}` | **Admin.** Update (also used to reactivate with `active: true`) |
+| DELETE | `/medications/{id}` | **Admin.** `{"outcome":"DELETED"}` if unused; `{"outcome":"DEACTIVATED"}` (soft delete) if an encounter already uses it |
 | GET | `/persons` | All persons |
 | GET | `/persons/{id}` | One person |
 | POST | `/persons` | Create/update a person (upsert by client id) |

@@ -61,3 +61,11 @@ export async function postJson<T>(service: Service, path: string, body: unknown)
 export async function getBlob(service: Service, path: string): Promise<Blob> {
   return (await request(service, path)).blob();
 }
+
+export async function putJson<T>(service: Service, path: string, body: unknown): Promise<T> {
+  return (await request(service, path, { method: 'PUT', body: JSON.stringify(body) })).json();
+}
+
+export async function deleteJson<T>(service: Service, path: string): Promise<T> {
+  return (await request(service, path, { method: 'DELETE' })).json();
+}

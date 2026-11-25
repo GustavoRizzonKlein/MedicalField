@@ -16,7 +16,8 @@ import { initials } from './format';
 import type { Professional } from './types';
 import { AuditView } from './views/AuditView';
 import { EncountersView } from './views/EncountersView';
-import { MedicalRecordsView, MedicationsView, PersonsView, ProfessionalsView } from './views/RegistryViews';
+import { MedicationsView } from './views/MedicationsView';
+import { MedicalRecordsView, PersonsView, ProfessionalsView } from './views/RegistryViews';
 
 export interface ViewProps {
   search: string;

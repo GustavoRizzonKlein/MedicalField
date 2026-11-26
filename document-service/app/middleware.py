@@ -45,9 +45,14 @@ class AccessLogMiddleware(BaseHTTPMiddleware):
 
 
 class AuthenticationMiddleware(BaseHTTPMiddleware):
-    """Every route requires a valid Bearer token (login lives in the identity service)."""
+    """Every route requires a valid Bearer token (login lives in the identity service),
+    except the Swagger UI and its OpenAPI document."""
+
+    PUBLIC_PATHS = ("/docs", "/openapi.json")
 
     async def dispatch(self, request: Request, call_next):
+        if request.url.path in self.PUBLIC_PATHS:
+            return await call_next(request)
         header = request.headers.get("authorization", "")
         if not header.startswith("Bearer "):
             return JSONResponse({"error": "Missing Bearer token"}, status_code=401)

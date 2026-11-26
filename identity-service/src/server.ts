@@ -1,8 +1,10 @@
 import express, { type NextFunction, type Request, type Response } from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { config } from './config.js';
 import { migrate } from './db.js';
 import { loadOrCreateKeys } from './keys.js';
 import { accessLog, authenticate } from './middleware.js';
+import { openApiDocument } from './openapi.js';
 import { createRoutes } from './routes.js';
 import { seedIfEmpty } from './seed.js';
 
@@ -16,6 +18,8 @@ app.use(express.json({ limit: '1mb' }));
 
 // Chain of Responsibility: each middleware handles one concern and passes the request on.
 app.use(accessLog);
+// Swagger UI is public: it comes before the authentication link.
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 app.use(authenticate(publicKey, ['POST /auth/login']));
 app.use(createRoutes(privateKey));
 

@@ -12,7 +12,8 @@ import java.io.IOException;
 
 /**
  * Second link of the filter chain (after AccessLogFilter): every route of this service
- * requires a valid token. Login lives in the identity service, so there is no public route here.
+ * requires a valid token. Login lives in the identity service, so the only public routes here
+ * are the Swagger UI and its OpenAPI document.
  */
 @Component
 @Order( 2 )
@@ -23,6 +24,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter
     public JwtAuthenticationFilter( JwtVerifier jwtVerifier )
     {
         this.jwtVerifier = jwtVerifier;
+    }
+
+    @Override
+    protected boolean shouldNotFilter( HttpServletRequest request )
+    {
+        String path = request.getRequestURI();
+        return path.startsWith( "/swagger-ui" ) || path.startsWith( "/v3/api-docs" );
     }
 
     @Override

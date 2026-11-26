@@ -1,7 +1,8 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Query, Request
+from fastapi import Depends, FastAPI, Query, Request
 from fastapi.responses import JSONResponse, Response
+from fastapi.security import HTTPBearer
 from pydantic import BaseModel
 
 from . import config, db
@@ -18,7 +19,16 @@ async def lifespan(_app: FastAPI):
     yield
 
 
-app = FastAPI(title="MedicalField Document Service", lifespan=lifespan, docs_url=None, redoc_url=None, openapi_url=None)
+# Swagger UI at /docs. The token is checked by AuthenticationMiddleware; the HTTPBearer
+# dependency only adds the "Authorize" button to the documentation.
+app = FastAPI(
+    title="MedicalField Document Service",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url=None,
+    openapi_url="/openapi.json",
+    dependencies=[Depends(HTTPBearer(auto_error=False))],
+)
 
 # Starlette runs the middleware added last first: access log -> authentication -> route.
 app.add_middleware(AuthenticationMiddleware)
